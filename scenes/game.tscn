@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://ch4f7tmp4pc45"]
+[gd_scene load_steps=17 format=3 uid="uid://ch4f7tmp4pc45"]
 
 [ext_resource type="Texture2D" uid="uid://crbd11hvyua22" path="res://assets/sprites/world_tileset.png" id="1_5sdxw"]
 [ext_resource type="PackedScene" uid="uid://dbliuur2kxbuo" path="res://scenes/player.tscn" id="1_jlyr3"]
@@ -7,7 +7,6 @@
 [ext_resource type="FontFile" uid="uid://d1x802as5hws1" path="res://assets/fonts/PixelOperator8.ttf" id="3_q4axo"]
 [ext_resource type="PackedScene" uid="uid://deq477j8qwn88" path="res://scenes/killzone.tscn" id="3_w5pwq"]
 [ext_resource type="PackedScene" uid="uid://bdh4i4y0upuaw" path="res://scenes/coin.tscn" id="4_8phg1"]
-[ext_resource type="Texture2D" uid="uid://b1mnxb73wsub3" path="res://assets/mockup.png" id="4_qhsyq"]
 [ext_resource type="PackedScene" uid="uid://dgiv2voq1rpid" path="res://scenes/slime.tscn" id="6_mhxc5"]
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="8_58wa1"]
 [ext_resource type="PackedScene" uid="uid://bbwdfumiybm7g" path="res://scenes/bot.tscn" id="10_prgp3"]
@@ -234,13 +233,6 @@ theme_override_fonts/font = ExtResource("3_q4axo")
 theme_override_font_sizes/font_size = 24
 text = "Coins: 0"
 
-[node name="TextureRect" type="TextureRect" parent="Player/Camera2D/CanvasLayer"]
-visible = false
-offset_right = 1151.0
-offset_bottom = 647.0
-texture = ExtResource("4_qhsyq")
-expand_mode = 3
-
 [node name="Coins" type="Node" parent="."]
 
 [node name="Coin3" parent="Coins" instance=ExtResource("4_8phg1")]
@@ -280,4 +272,4 @@ position = Vector2(312, 0)
 script = ExtResource("8_58wa1")
 
 [node name="bot" parent="." instance=ExtResource("10_prgp3")]
-position = Vector2(-942, -1)
+position = Vector2(-943, 1)
