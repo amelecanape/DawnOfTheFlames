@@ -21,12 +21,11 @@ func _process(delta: float) -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	print("wsh t mort la???")
-	if body.dash_frames!=0:
-		queue_free()
-	else:
-		timer.start()
-		body.get_node("CollisionShape2D").queue_free()
-		Engine.time_scale=0.5
+	#if body.dash_frames!=0:
+	queue_free()
+	timer.start()
+	body.get_node("CollisionShape2D").queue_free()
+	Engine.time_scale=0.5
 
 
 func _on_timer_timeout() -> void:

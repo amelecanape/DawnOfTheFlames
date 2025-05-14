@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://dbliuur2kxbuo"]
+[gd_scene load_steps=48 format=3 uid="uid://dbliuur2kxbuo"]
 
 [ext_resource type="Texture2D" uid="uid://c07oiqj8rskx1" path="res://assets/sprites/knight.png" id="1_prov3"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_t7ncu"]
@@ -136,6 +136,18 @@ region = Rect2(64, 0, 64, 64)
 atlas = ExtResource("2_hca2p")
 region = Rect2(128, 0, 64, 64)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_0os48"]
+atlas = ExtResource("2_hca2p")
+region = Rect2(0, 384, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nr816"]
+atlas = ExtResource("2_hca2p")
+region = Rect2(384, 384, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wp3ci"]
+atlas = ExtResource("2_hca2p")
+region = Rect2(384, 384, 64, 64)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_748v6"]
 atlas = ExtResource("2_hca2p")
 region = Rect2(0, 64, 64, 64)
@@ -199,7 +211,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"hit_1",
-"speed": 10.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -212,6 +224,9 @@ animations = [{
 "texture": SubResource("AtlasTexture_ggarp")
 }, {
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_ggarp")
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_o15u8")
 }, {
 "duration": 1.0,
@@ -219,7 +234,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"hit_2",
-"speed": 10.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -242,7 +257,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"hit_3",
-"speed": 10.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -299,6 +314,20 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_0os48")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nr816")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wp3ci")
+}],
+"loop": false,
+"name": &"parry",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_748v6")
 }, {
 "duration": 1.0,
@@ -318,8 +347,9 @@ animations = [{
 "speed": 6.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_82xwu"]
-radius = 6.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_uggf3"]
+radius = 7.0
+height = 26.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_luoso"]
 size = Vector2(20, 32.5)
@@ -327,33 +357,34 @@ size = Vector2(20, 32.5)
 [node name="Player" type="CharacterBody2D"]
 z_index = 5
 collision_layer = 2
+collision_mask = 3
 script = ExtResource("1_t7ncu")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(1, -17)
 scale = Vector2(0.535417, 0.535417)
 sprite_frames = SubResource("SpriteFrames_a1pvn")
-animation = &"hit_2"
+animation = &"parry"
 autoplay = "idle_2"
-frame = 4
+frame = 1
 frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 z_index = 5
-position = Vector2(0, -6)
-shape = SubResource("CircleShape2D_82xwu")
+position = Vector2(0, -13)
+shape = SubResource("CapsuleShape2D_uggf3")
 
 [node name="Timer" type="Timer" parent="."]
 one_shot = true
 
 [node name="Timer2" type="Timer" parent="."]
-wait_time = 0.5
+wait_time = 0.3
 one_shot = true
 
 [node name="hitbox_droite" type="Area2D" parent="."]
 position = Vector2(10, -16)
 collision_layer = 2
-collision_mask = 3
+collision_mask = 4
 
 [node name="d" type="CollisionShape2D" parent="hitbox_droite"]
 position = Vector2(7, -3)
@@ -362,12 +393,16 @@ shape = SubResource("RectangleShape2D_luoso")
 [node name="hitbox_gauche" type="Area2D" parent="."]
 position = Vector2(10, -16)
 collision_layer = 2
-collision_mask = 3
+collision_mask = 4
 
 [node name="g" type="CollisionShape2D" parent="hitbox_gauche"]
 position = Vector2(-28, -4)
 shape = SubResource("RectangleShape2D_luoso")
 
+[node name="timermort" type="Timer" parent="."]
+one_shot = true
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="Timer2" to="." method="_on_timer_2_timeout"]
 [connection signal="body_entered" from="hitbox_droite" to="." method="_on_hitbox_droite_body_entered"]
+[connection signal="timeout" from="timermort" to="." method="_on_timermort_timeout"]

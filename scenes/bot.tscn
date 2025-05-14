@@ -1,18 +1,18 @@
-[gd_scene load_steps=7 format=3 uid="uid://bbwdfumiybm7g"]
+[gd_scene load_steps=8 format=3 uid="uid://bbwdfumiybm7g"]
 
-[ext_resource type="Texture2D" uid="uid://csjupkwi8er6" path="res://assets/sprites/mechant_flip.png" id="1_1ew3w"]
 [ext_resource type="Script" path="res://bot.gd" id="1_8vtjp"]
+[ext_resource type="Texture2D" uid="uid://bne0pdo3esbes" path="res://assets/sprites/robot.png" id="2_asvgg"]
 [ext_resource type="PackedScene" uid="uid://dc3rosvkfr4kc" path="res://scenes/health_bar.tscn" id="3_7i4k2"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_kawq2"]
-atlas = ExtResource("1_1ew3w")
-region = Rect2(0, 0, 300, 300)
+[sub_resource type="AtlasTexture" id="AtlasTexture_pw76r"]
+atlas = ExtResource("2_asvgg")
+region = Rect2(0, 0, 64, 64)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_kwgmq"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_kawq2")
+"texture": SubResource("AtlasTexture_pw76r")
 }],
 "loop": true,
 "name": &"default",
@@ -28,14 +28,18 @@ animations = [{
 radius = 7.0
 height = 34.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_avq8x"]
+size = Vector2(109.5, 32.5)
+
 [node name="bot" type="CharacterBody2D"]
-collision_layer = 3
+position = Vector2(-18, 0)
+collision_layer = 6
 collision_mask = 3
 script = ExtResource("1_8vtjp")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(15.75, -22.25)
-scale = Vector2(0.145, 0.145)
+position = Vector2(18, -17)
+scale = Vector2(0.538203, 0.538203)
 sprite_frames = SubResource("SpriteFrames_kwgmq")
 autoplay = "default"
 
@@ -48,3 +52,27 @@ offset_left = 5.0
 offset_top = -38.0
 offset_right = 32.0
 offset_bottom = -36.0
+
+[node name="hitbox_droite" type="Area2D" parent="."]
+position = Vector2(10, -16)
+collision_layer = 2
+collision_mask = 2
+
+[node name="d" type="CollisionShape2D" parent="hitbox_droite"]
+position = Vector2(71, -7)
+shape = SubResource("RectangleShape2D_avq8x")
+
+[node name="hitbox_gauche" type="Area2D" parent="."]
+position = Vector2(10, -16)
+collision_layer = 2
+collision_mask = 2
+
+[node name="g" type="CollisionShape2D" parent="hitbox_gauche"]
+position = Vector2(-54, -7)
+shape = SubResource("RectangleShape2D_avq8x")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.001
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

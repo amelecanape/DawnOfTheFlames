@@ -10,6 +10,7 @@ var hold=15
 var hit=1
 var cooldown=0
 var dash_frames=0
+var parry_frames=0
 var animation_override=false
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
@@ -18,8 +19,25 @@ var animation_override=false
 
 @onready var hitbox_droite: Area2D = $hitbox_droite
 @onready var hitbox_gauche: Area2D = $hitbox_gauche
+@onready var timermort: Timer = $timermort
 
+@onready var health_bar: ProgressBar = $Camera2D/CanvasLayer/HealthBar
 
+func _ready() -> void:
+	health_bar.init_health(10)
+
+var vie=10
+func deduct_health(x: int):
+	vie=vie-x
+	health_bar.set_health(vie)
+	if vie<=0:
+		$timermort.start()
+		$".".get_node("CollisionShape2D").queue_free()
+		Engine.time_scale=0.5
+
+func _on_timermort_timeout() -> void:
+	get_tree().reload_current_scene()
+	Engine.time_scale=1
 
 
 func animation(direction: int):
@@ -43,12 +61,19 @@ func attack():
 	if cooldown==0:
 		if last_direction==1:
 			for x in hitbox_droite.get_overlapping_bodies():
-				x.deduct_health(hit)
+				if x!=$".":
+					x.deduct_health(hit)
+					if hit==3:
+						x.jump()
 		else:
 			for x in hitbox_gauche.get_overlapping_bodies():
-				x.deduct_health(hit)
+				if x!=$".":
+					x.deduct_health(hit)
+					if hit==3:
+						x.jump()
+						cooldown+=1
+		cooldown+=1
 		timer_2.start()
-		cooldown=1
 		if hit==1:
 			
 			animated_sprite_2d.play("hit_1")
@@ -71,7 +96,7 @@ func attack():
 				timer.start()
 				hit=1
 
-
+	
 
 func _on_timer_timeout() -> void:
 	print("non")
@@ -79,7 +104,8 @@ func _on_timer_timeout() -> void:
 	
 func _on_timer_2_timeout() -> void:
 	animation_override=false;
-	cooldown=0
+	cooldown-=1
+	print(cooldown)
 
 func _physics_process(delta: float) -> void:
 	
@@ -110,12 +136,29 @@ func _physics_process(delta: float) -> void:
 			velocity.y=50
 		
 		
+	if Input.is_action_just_pressed("grab"):
+		if last_direction==1:
+			for x in hitbox_droite.get_overlapping_bodies():
+				if x!=$".":
+					x.jump()
+		else:
+			for x in hitbox_gauche.get_overlapping_bodies():
+				if x!=$".":
+					x.jump()
 	
-
+	
+	if Input.is_action_just_pressed("parry"):
+		if cooldown==0:
+			parry_frames=30
+			animated_sprite_2d.play("parry")
+			animation_override=1
+			cooldown=1
+			timer_2.start()
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.@onready var player: CharacterBody2D = $"."
-
 	var direction := Input.get_axis("move_left", "move_right")
+	if parry_frames>0:
+		parry_frames-=1
 	if dash_frames ==0:
 		
 		if direction:
@@ -137,29 +180,46 @@ func _physics_process(delta: float) -> void:
 			hit=5
 			animation_override=1
 			animated_sprite_2d.play("dash")
+			$".".set_collision_mask_value(2, false)
 			velocity.x= last_direction * 1000.0
-			
+			if last_direction==1:
+				for x in hitbox_droite.get_overlapping_bodies():
+					if x!=$".":
+						x.deduct_health(hit)
+						hit=0
+						x.jump()
+			else:
+				for x in hitbox_gauche.get_overlapping_bodies():
+					if x!=$".":
+						x.deduct_health(hit)
+						hit=0
+						x.jump()
 		if Input.is_action_just_pressed("attack"):
 			attack()
 	else:
 		dash_frames-=1
 		if last_direction==1:
 			for x in hitbox_droite.get_overlapping_bodies():
-				x.deduct_health(hit)
-				hit=0
+				if x!=$".":
+					x.deduct_health(hit)
+					hit=0
+					x.jump()
+				
 		else:
 			for x in hitbox_gauche.get_overlapping_bodies():
-				x.deduct_health(hit)
-				hit=0
-				
+				if x!=$".":
+					x.deduct_health(hit)
+					hit=0
+					x.jump()
 		if dash_frames==0:
 			animation_override=0
 			velocity.x=direction * SPEED
+			$".".set_collision_mask_value(2, true)
 			hit=1
 		else:
 			velocity.x=move_toward(velocity.x, SPEED*last_direction, 100.0)
 	 
-	#if Input.is_action_just_pressed("ui_accept") and !is_on_floor():
-	#	velocity.x= 1000
+		#if Input.is_action_just_pressed("ui_accept") and !is_on_floor():
+		#	velocity.x= 1000
 	animation(direction)
 	move_and_slide()
